@@ -1,0 +1,67 @@
+server:
+  forward-headers-strategy: native
+  port: 8080
+
+spring:
+  application:
+    name: soms
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    password: ${DB_PASSWORD:root}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ssn}
+    username: ${DB_USER:postgres}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        generate_statistics: ${SQL_STAT:false}
+        format_sql: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.redisson.hibernate.RedissonRegionFactory
+      redisson-config: classpath:redisson.yaml
+    jakarta:
+      persistence:
+        sharedCache:
+          mode: ENABLE_SELECTIVE
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+      show-sql: false
+
+  ######### redis ###########
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASS:}
+#      username: ${REDIS_USERNAME:default}
+
+      ######### pagination ###########
+      web:
+        pageable:
+          default-page-size: ${DEFAULT_PAGE_SIZE:25}
+          max-page-size: ${MAX_PAGE_SIZE:100}
+
+
+
+### ACTUATOR ###
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+        show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+    enabled: ${SWAGGER-ENABLED:true}
